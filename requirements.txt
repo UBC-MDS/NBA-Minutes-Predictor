@@ -1,2 +1,4 @@
 pandas==0.25.2
 numpy==1.17.2
+docopt==0.6.2
+requests==2.18.4
