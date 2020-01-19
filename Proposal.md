@@ -41,6 +41,7 @@ First we will clean the data, and transform all data labels to be quantitative. 
  
  <br>
 
+Before doing our EDA analysis, we split the data into train/test sets.
 For our EDA table, we will calculate the rolling averages of the number of court minutes in the past 5, 10 and 20 games for each player and calculated the correlation between them. We included these values as additional parameters to derive our model. 
 <br>
 For our figure, we plan on making a residual error plot. This will help us determine if our model has systematic errors in predicting the number of minutes players play.  
