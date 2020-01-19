@@ -15,7 +15,7 @@ In addition to predicting player performance, player minutes can also be used to
 
 How can we use historical player data to predict the number of minutes that players will play in upcoming NBA matches?
 
-Our Hypothesis is that certain historical stats of a player can be used to make accurate predictions better than just using the players prevoius n-games average minutes.
+Our Hypothesis is that certain historical stats of a player can be used to make accurate predictions better than just using the players previous n-games average minutes.
 
 ## Origin of Data
 
@@ -29,7 +29,7 @@ The data can be downloaded without authenticating with a Kaggle API key [here](h
 
 - First we will clean the data, and transform all data labels to be quantitative. 
 - Then we will create new features based off the data (e.g. 5, 10, and 20 game rolling averages for various stats). 
-- Next, we will split the data into training and testing sets (3:1 ratio). Then we plan on analyzing the data and pick parameters that would make the most sense in predicting our target.
+- Next, we will split the data into training and testing sets (3:1 ratio). Then we plan on analyzing the data and picking parameters that would make the most sense in predicting our target.
 - Last, we will try different approaches in for our predictive model (decision tree, logisitic regression, etc.) and see which one performs the best. 
 
 ## EDA Analysis and Figures
