@@ -7,8 +7,7 @@
 <br>
 
 
-
-The motivation behind this project is to help make decisions when placing bets on daily fantasy sports. In other words, we are applying "machine-learning" algorithms to help predict player performance. However, since there are many performance measures, we will only be focusing on predicting the number of minutes that each player will play on the respective teams. It has been shown that the number of minutes played correlates well with the number of points scored, and thus the total score of a team can be estimated from such. 
+The motivation behind this project is to help make decisions when placing bets on daily fantasy sports. In other words, we are applying "machine-learning" algorithms to help predict player performance. However, since there are many performance measures, we will only be focusing on predicting the number of minutes that each player will play on the respective teams.
 <br>
 In addition to predicting match outcomes, player minutes can also be used to help viewers decide if they want to buy tickets to the game. Some viewers are big fans of certain players.
 <br>
