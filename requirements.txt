@@ -3,3 +3,6 @@ numpy==1.17.2
 docopt==0.6.2
 requests==2.20.0
 tqdm==4.41.1
+selenium==3.141.0
+altair==4.0.1
+scikit-learn==0.22.1
