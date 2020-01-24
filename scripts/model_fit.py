@@ -126,7 +126,7 @@ def main(file_name, save_folder):
                                'LGBM': [gbm_mse, gbm_r2]},
                          index=['MSE', 'Coefficient of Determination'])
     try:
-        my_df.to_csv(str('../' + save_folder + '/score_table.csv'))
+        my_df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
         print('Finished Calculating & Saving Prediction Errors')
     except:
         print('Save folder is not valid!')
@@ -217,7 +217,7 @@ def main(file_name, save_folder):
 
 
     fig.update_layout(height=1000, width=800, showlegend=False)
-    fig.write_image(str('../' + save_folder + '/residual_plot.png'))
+    fig.write_image(str('../' + save_folder + '/modelling-residual_plot.png'))
     print('Finished Creating Residual Plots')
 
     # Feature Importance Plot
@@ -234,7 +234,7 @@ def main(file_name, save_folder):
     ).properties(
         title='Importance of Different Features'
     )
-    gbm_features.save(str('../' + save_folder + '/gbm_importance.png'))
+    gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'))
 
 
 if __name__ == "__main__":
