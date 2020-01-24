@@ -1,3 +1,22 @@
+# author: Jack Tan
+# date: 2020-01-24
+
+"""
+This script takes processed data from the 'data' folder in the project repostiory
+and creates various models to predict the 'playMin' feature using other features.
+Types of model produced includes: baseline, linear regression, XGBoost and LGBM
+Afterwards, the scripts test the models and calculates the MSE and coefficient of
+determination. Residual plots are created for all models and a feature importance
+plot is created for the GBM model.
+
+Both the file name and the save folder are required as inputs.
+Usage: model_fit.py --file_name=<file_name> --save_folder=<save_folder>
+Options:
+--file_name=<file_name>         file name of the processed features and targets
+--save_folder=<save_folder>	    Folder to save all figures and csv files produced
+Example: python data_download.py --file_name=player_data_ready.csv --out_file=img
+"""
+
 # Loading the required packages
 # Models
 from xgboost import XGBRegressor
