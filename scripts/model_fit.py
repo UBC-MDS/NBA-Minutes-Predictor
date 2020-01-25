@@ -1,4 +1,5 @@
 # author: Jack Tan
+# contributer: Jarvis Nederlof
 # date: 2020-01-24
 
 """
@@ -10,11 +11,14 @@ determination. Residual plots are created for all models and a feature importanc
 plot is created for the GBM model.
 
 Both the file name and the save folder are required as inputs.
+
 Usage: model_fit.py --file_name=<file_name> --save_folder=<save_folder>
+
 Options:
 --file_name=<file_name>         file name of the processed features and targets
 --save_folder=<save_folder>	    Folder to save all figures and csv files produced
-Example: python data_download.py --file_name=player_data_ready.csv --out_file=img
+
+Example: python data_download.py --file_name=player_data_ready.csv --save_folder=img
 """
 
 # Loading the required packages
@@ -35,207 +39,325 @@ from sklearn.model_selection import train_test_split
 # Binary Model Save
 from pickle import dump
 from docopt import docopt
-# Creating classes
-
-
-class baseline_model:
-    def predict(self, X):
-        predictions = X.loc[:, 'playMin_last5_median']
-        return predictions
+# Other Packages
+from termcolor import colored
+import sys
+import os
+# Ignore warnings from packages in models
+import warnings
+warnings.simplefilter("ignore")
 
 opt = docopt(__doc__)
 
 def main(file_name, save_folder):
-    # Load the processed data from csv
-    # e.g. 'player_data_ready.csv'
-    path = str('../data/' + file_name)
-    try:
-        all_data = pd.read_csv(path)
-        print('Data loaded successfully!')
-    except:
-        print('Path to file is not valid!')
-        raise
-    # Removing columns that can't be interpretted
-    all_data = all_data.drop(
-        columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+	# Load the processed data from csv
+	# e.g. 'player_data_ready.csv'
+	
+	print(colored("\nWARNING: This script takes about 1 minute to run\n", 'yellow'))
+	
+	# Validate the file-path to load file
+	path_str = str('../data/' + file_name)
+	if os.path.exists(path_str) == False:
+		path_str = str('data/' + file_name)
+	try:
+		data = pd.read_csv(path_str)
+		print(colored('Data loaded successfully!', 'green'))
+	except:
+		print(colored('ERROR: Path to file is not valid!', 'red'))
+		raise
+
+	# Validate the save_foler directory exists or make folder
+	if os.path.exists(save_folder) == False:
+		if os.path.exists(str('../' + save_folder) == False):
+			try:
+				os.makedirs(save_folder)
+			except:
+				print(colored('ERROR: Path to save directory is not valid!', 'red'))
+				raise
+
+	# Preprocess the Data
+	X_train, y_train, X_test, y_test = preprocess(data)
+
+	# Fit the models
+	lgb = lgbm_model(X_train, y_train, X_test, y_test)
+	xgb = xgboost_model(X_train, y_train, X_test, y_test)
+	lm = linear_model(X_train, y_train, X_test, y_test)
+	base = baseline_model()
+
+	# Setup plot figure
+	fig = make_subplots(rows=4, cols=1, subplot_titles=("GBM Model",
+														"XGB Model",
+														"Linear Regression Model",
+														"Baseline Model"))
+
+	# Get the predictions and score each model
+	results = {}
+	for i, model in enumerate([(lgb, 'lgbm'), (xgb, 'xgboost'), (lm, 'linaer regression'), (base, 'base model')]):
+		# Get the predictions
+		preds = predictions(model[0], X_test)
+		# Get the scoring metrics
+		results[model[1]] = scoring(preds, y_test)
+		# Calculate the model residuals
+		resid_df = calc_residuals(preds, y_test, model[1])
+		# Add to plot figure
+		fig.add_trace(go.Scatter(x=resid_df.loc[:, 'x'],
+								 y=resid_df.loc[:, 'Mean Residual'],
+								 mode='markers'),
+								 row=i+1,
+								 col=1)
+
+	# Get the model results into a dataframe
+	df = pd.DataFrame(data=results, index=['MSE', 'Coefficient of Determination'])
+	
+	# Save the results dataframe
+	save_results(df, save_folder)
+
+	# Save the plotting figure
+	plot_figure(fig, save_folder)
+
+	# Save the feature importance from LGBM model
+	feature_importance(lgb, X_test, save_folder)
+
+class baseline_model:
+	def predict(self, X):
+		predictions = X.loc[:, 'playMin_last5_median']
+		return predictions
+
+def preprocess(data):
+	"""
+	Preprocess the data by dropping certain columns not suitable to train on.
+	Split the data into training and testing splits.
+
+	Return a tuple of the training and testing splits.
+
+	Parameters:
+	-----------
+	data -- (pd DataFrame) The loaded data.
+	"""
+	# Removing columns that can't be interpretted
+	data = data.drop(
+		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+
+	# Test that target is in data
+	assert 'playMin' in data.columns, 'No targets found'
+	# print('Test 1 passed!')
+	
+	# Splitting data into training and testing
+	X, y = data.loc[:, data.columns != 'playMin'], data['playMin']
+	X_train, X_test, y_train, y_test = train_test_split(X,
+														y,
+														random_state=100,
+														test_size=0.25)
+	return X_train, y_train, X_test, y_test
+
+def lgbm_model(X_train, y_train, X_test, y_test):
+	"""
+	Initialize and fit the LGBM model.
+
+	Return the fitted model.
+	
+	Parameters:
+	-----------
+	X_train -- (pd DataFrame) The training data
+	y_train -- (pd DataFrame) The training target
+	X_test -- (pd DataFrame) The testing data
+	Y_test -- (pd DataFrame) The testing target
+	"""
+	print(colored("\nTraining LGBM Model", 'cyan'))
+	# LGBM MODEL:
+	gbm = lgb.LGBMRegressor(num_leaves=31,
+							learning_rate=0.1,
+							n_estimators=60)
+	gbm.fit(X_train, y_train,
+			eval_set=[(X_test, y_test)],
+			eval_metric='l2',
+			verbose=False)
+	print(colored('Finished Training LGBM Model\n', 'green'))
+	return gbm
 
 
-    assert 'playMin' in all_data.columns, 'No targets found'
-    print('Test 1 passed!')
-    # Splitting data into training and testing
-    X, y = all_data.loc[:, all_data.columns != 'playMin'], all_data['playMin']
-    X_train, X_test, y_train, y_test = train_test_split(X,
-                                                        y,
-                                                        random_state=100,
-                                                        test_size=0.25)
-    print('Finished Splitting Data')
+def xgboost_model(X_train, y_train, X_test, y_test):
+	"""
+	Initialize and fit the XG Boost model.
 
-    # LGBM MODEL:
-    gbm = lgb.LGBMRegressor(num_leaves=31,
-                            learning_rate=0.1,
-                            n_estimators=60)
-    gbm.fit(X_train, y_train,
-            eval_set=[(X_test, y_test)],
-            eval_metric='l1',
-            verbose=False)
-    print('Finished Fitting GBM Model')
+	Return the fitted model.
+	
+	Parameters:
+	-----------
+	X_train -- (pd DataFrame) The training data
+	y_train -- (pd DataFrame) The training target
+	X_test -- (pd DataFrame) The testing data
+	Y_test -- (pd DataFrame) The testing target
+	"""
+	print(colored("Training XGBoost Model", 'cyan'))
+	# XGBoost MODEL:
+	params = {'n_estimators': 60,
+			  'max_depth': 5,
+			  'booster': 'gbtree', # gbtree or dart seem best
+			  'learning_rate': .1,
+			  'gamma': 0,  # default 0 - larger gamma means more conservative model
+			  'reg_lambda': 1,  # default 1 - L2 regularization
+			  'reg_alpha': 0,  # default 0 - L1 regularization
+			  'objective': 'reg:squarederror',
+			  'eval_metric': ['rmse'],
+			  'verbosity': 0}
+	xgb = XGBRegressor(**params).fit(X_train, y_train)
+	print(colored('Finished Training XGBoost Model\n', 'green'))
+	return xgb
 
-    # XGBoost MODEL:
-    params = {'n_estimators': 60,
-              'max_depth': 5,
-              'booster': 'gbtree',  # gbtree or dart seem best
-              'learning_rate': .1,
-              'gamma': 0,  # default 0 - larger gamma means more conservative model
-              'reg_lambda': 1,  # default 1 - L2 regularization
-              'reg_alpha': 0,  # default 0 - L1 regularization
-              'objective': 'reg:squarederror',
-              'eval_metric': ['rmse']}
-    xgb_model = XGBRegressor(**params).fit(X_train, y_train)
-    print('Finished Fitting XGB Model')
+def linear_model(X_train, y_train, X_test, y_test):
+	"""
+	Initialize and fit the Linear Regression model.
 
-    # Linear Regression Model
-    lr_model = LinearRegression()
-    lr_model.fit(X=X_train, y=y_train)
-    print('Finished Fitting Linear Regression Model')
+	Return the fitted model.
+	
+	Parameters:
+	-----------
+	X_train -- (pd DataFrame) The training data
+	y_train -- (pd DataFrame) The training target
+	X_test -- (pd DataFrame) The testing data
+	Y_test -- (pd DataFrame) The testing target
+	"""
+	print(colored("Training Linear Regression Model", 'cyan'))
+	# Linear Regression Model
+	lr_model = LinearRegression()
+	lr_model.fit(X=X_train, y=y_train)
+	print(colored('Finished Training Linear Regression Model\n', 'green'))
+	return lr_model
 
-    # Baseline Model
-    base_model = baseline_model()
+def predictions(model, X_test):
+	"""
+	Call the predict method on each model.
 
-    # Calculating test predictions for different models
-    gbm_test = gbm.predict(X=X_test)
-    xgb_test = xgb_model.predict(data=X_test)
-    lr_test = lr_model.predict(X=X_test)
-    base_test = base_model.predict(X=X_test)
+	Return the model's predictions as an array.
 
-    # Calculating MSE and r2 score for different models
-    gbm_mse = mean_squared_error(y_test, gbm_test)
-    gbm_r2 = r2_score(y_test, gbm_test)
-    assert gbm_mse > 0, 'Mean squared error should be greater than 0!'
-    print('Test 2 passed!')
-    xgb_mse = mean_squared_error(y_test, xgb_test)
-    xgb_r2 = r2_score(y_test, xgb_test)
-    lr_mse = mean_squared_error(y_test, lr_test)
-    lr_r2 = r2_score(y_test, lr_test)
-    base_mse = mean_squared_error(y_test, base_test)
-    base_r2 = r2_score(y_test, base_test)
+	Parameters:
+	-----------
+	model -- (model object) the trained model
+	X_test -- (pd DataFrame) the testing data
+	"""
+	return model.predict(X_test)
 
-    # Saving results as csv file
-    my_df = pd.DataFrame(data={'Baseline': [base_mse, base_r2],
-                               'Linear Regression': [lr_mse, lr_r2],
-                               'XGB': [xgb_mse, xgb_r2],
-                               'LGBM': [gbm_mse, gbm_r2]},
-                         index=['MSE', 'Coefficient of Determination'])
-    try:
-        my_df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
-        print('Finished Calculating & Saving Prediction Errors')
-    except:
-        print('Save folder is not valid!')
-        raise
+def scoring(pred, y_test):
+	"""
+	Get the mean squared error and the r2 score for each
+	model's predictions.
 
-    # Calculating residuals for different models
-    residual_gbm = gbm_test - y_test
-    residual_xgb = xgb_test - y_test
-    residual_lr = lr_test - y_test
-    residual_base = base_test - y_test
-    base_df = pd.DataFrame(data={'x': base_test, 'y': residual_base}).groupby(
-        ['x']).mean().reset_index()
-    xgb_df = pd.DataFrame(
-        data={'x': xgb_test, 'y': residual_xgb}).sort_values(by='x')
-    gbm_df = pd.DataFrame(
-        data={'x': gbm_test, 'y': residual_gbm}).sort_values(by='x')
-    lr_df = pd.DataFrame(data={'x': lr_test, 'y': residual_lr}).sort_values(by='x')
+	Return the scoring metrics in a tuple.
 
-    # Making dataframes of mean residuals over bins
-    xgb_preds = pd.melt(xgb_df,
-                        id_vars=['x'],
-                        value_vars=['y'],
-                        value_name='Mean Residual')
+	Parameters:
+	-----------
+	model -- (model object) the trained model
+	X_test -- (pd DataFrame) the testing data
+	"""
+	# Calculating MSE and r2 score for different models
+	mse = round(mean_squared_error(y_test, pred), 2)
+	r2 = round(r2_score(y_test, pred), 2)
+	assert mse > 0, 'Mean squared error should be greater than 0!'
+	# print('Test 2 passed!')
+	return mse, r2
 
-    # Bin the dataframe with a 0.1 bin_size on the actuals
-    bins = np.arange(0, np.max(xgb_df.loc[:, 'x']), .1)
-    xgb_binned = xgb_preds.groupby(pd.cut(xgb_preds['x'], bins,
-                                          labels=False), as_index=False).mean()
+def calc_residuals(pred, y_test, model_name):
+	"""
+	Get the residual error scores for each trained model's predictions.
 
-    gbm_preds = pd.melt(gbm_df,
-                        id_vars=['x'],
-                        value_vars=['y'],
-                        value_name='Mean Residual')
+	Return a dataframe of the model's binned residuals.
 
-    # Bin the dataframe with a 0.1 bin_size on the actuals
-    bins = np.arange(0, np.max(gbm_df.loc[:, 'x']), .1)
-    gbm_binned = gbm_preds.groupby(pd.cut(gbm_preds['x'], bins,
-                                          labels=False), as_index=False).mean()
+	Parameters:
+	-----------
+	pred -- (list) the model's predictions
+	y_test -- (pd DataFrame) the testing targets
+	model_name -- (str) the name of the model
+	"""
+	# Calculating residuals for different models
+	residual = pred - y_test
+	if model_name == 'base model':
+		df = pd.DataFrame(data={'x': pred, 'y': residual}).groupby(['x']).mean().reset_index()
+	else:
+		df = pd.DataFrame(data={'x': pred, 'y': residual}).sort_values(by='x')
+	preds_df = pd.melt(df,
+					   id_vars=['x'],
+					   value_vars=['y'],
+					   value_name='Mean Residual')
+	
+	# Bin the dataframe with a 0.1 bin_size on the actuals
+	bins = np.arange(0, np.max(df.loc[:, 'x']), .1)
+	preds_binned = preds_df.groupby(pd.cut(preds_df['x'], 
+									bins,
+									labels=False), 
+									as_index=False).mean()
+	return preds_binned
 
-    lr_preds = pd.melt(lr_df,
-                       id_vars=['x'],
-                       value_vars=['y'],
-                       value_name='Mean Residual')
+def save_results(df, save_folder):
+	"""
+	Save the model results metrics into a csv file.
 
-    # Bin the dataframe with a 0.1 bin_size on the actuals
-    bins = np.arange(0, np.max(lr_df.loc[:, 'x']), .1)
-    lr_binned = lr_preds.groupby(pd.cut(lr_preds['x'], bins,
-                                        labels=False), as_index=False).mean()
+	Parameters:
+	-----------
+	df -- (pd DataFrame) the models results metrics
+	save_folder -- (str) the directory to save the results in
+	"""
+	try:
+		df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
+	except:
+		df.to_csv(str(save_folder + '/modelling-score_table.csv'))
+		# print(colored('ERROR: Save folder is not valid!', 'red'))
+		# raise
+	print(colored(f'Saved Model Results in /{save_folder} directory', 'green'))
 
+def plot_figure(fig, save_folder):
+	"""
+	Save the residual plots figures.
 
-    # Making figure for residual plots
-    fig = make_subplots(rows=4, cols=1, subplot_titles=("Baseline Model",
-                                                        "XGB Model",
-                                                        "Linear Regression Model",
-                                                        "GBM Model"))
+	Parameters:
+	-----------
+	fig -- (plotly figure object) the plotly residuals figure
+	save_folder -- (str) the directory to save the results in
+	"""
+	# Update xaxis properties
+	fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
 
-    fig.add_trace(
-        go.Scatter(x=base_df.loc[:, 'x'], y=base_df.loc[:, 'y'], mode='markers'),
-        row=1, col=1
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=xgb_binned.loc[:, 'x'], y=xgb_binned.loc[:, 'Mean Residual'], mode='markers'),
-        row=2, col=1
-    )
-
-    fig.add_trace(
-        go.Scatter(x=lr_binned.loc[:, 'x'],
-                   y=lr_binned.loc[:, 'Mean Residual'], mode='markers'),
-        row=3, col=1
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=gbm_binned.loc[:, 'x'], y=gbm_binned.loc[:, 'Mean Residual'], mode='markers'),
-        row=4, col=1
-    )
-
-    # Update xaxis properties
-    fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
-
-    # Update yaxis properties
-    fig.update_yaxes(title_text="Residual", range=[-5, 5], row=1, col=1)
-    fig.update_yaxes(title_text="Residual", range=[-5, 5], row=2, col=1)
-    fig.update_yaxes(title_text="Residual", range=[-5, 5], row=3, col=1)
-    fig.update_yaxes(title_text="Residual", range=[-5, 5], row=4, col=1)
+	# Update yaxis properties
+	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=1, col=1)
+	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=2, col=1)
+	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=3, col=1)
+	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=4, col=1)
 
 
-    fig.update_layout(height=1000, width=800, showlegend=False)
-    fig.write_image(str('../' + save_folder + '/modelling-residual_plot.png'))
-    print('Finished Creating Residual Plots')
+	fig.update_layout(height=1000, width=800, showlegend=False)
+	try:
+		fig.write_image(str('../' + save_folder + '/modelling-residual_plot.png'))
+	except:
+		fig.write_image(str(save_folder + '/modelling-residual_plot.png'))
+	print(colored(f'\nSaved Residuals Plot in /{save_folder} directory', 'green'))
 
-    # Feature Importance Plot
-    feature_df = pd.DataFrame()
-    feature_df['features'] = list(X_test.columns)
-    feature_df['importance'] = gbm.feature_importances_
-    feature_df.sort_values(by=['importance'], ascending=False, inplace=True)
+def feature_importance(gbm, X_test, save_folder):
+	"""
+	Parameters:
+	-----------
+	gbm -- (model object) the LGBM model
+	X_test -- (pd DataFrame) the testing data
+	save_folder -- (str) the directory to save the results in
+	"""
+	# Feature Importance Plot
+	feature_df = pd.DataFrame()
+	feature_df['features'] = list(X_test.columns)
+	feature_df['importance'] = gbm.feature_importances_
+	feature_df.sort_values(by=['importance'], ascending=False, inplace=True)
 
-    # Plot the feature importance
-    gbm_features = alt.Chart(feature_df).mark_bar().encode(
-        x='importance:Q',
-        y=alt.Y('features:N', sort=alt.EncodingSortField(
-            field='features', op='count', order='ascending'))
-    ).properties(
-        title='Importance of Different Features'
-    )
-    gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'))
-
+	# Plot the feature importance
+	gbm_features = alt.Chart(feature_df).mark_bar().encode(
+		x='importance:Q',
+		y=alt.Y('features:N', sort=alt.EncodingSortField(
+			field='features', op='count', order='ascending'))
+	).properties(
+		title='Importance of Different Features'
+	)
+	try:
+		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=5.0)
+	except:
+		gbm_features.save(str(save_folder + '/modelling-gbm_importance.png'), scale_factor=1)
+	print(colored(f'\nSaved Features Importance Plot in /{save_folder} directory', 'green'))
 
 if __name__ == "__main__":
 	main(opt["--file_name"], opt["--save_folder"])
