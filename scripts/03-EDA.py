@@ -116,7 +116,7 @@ def main(input_path_file, save_folder):
 		height=200
 	).configure_axisX(labelAngle = -40).properties(title="Features' correlation with the target")	
 
-	corr_line.save(str(save_folder)+'/EDA-feat_corr_line.png', scale_factor=1.0)
+	corr_line.save(str(save_folder)+'/EDA-feat_corr_line.png', scale_factor=2.0)
 	print(colored('EDA-feat_corr_line.png successfully saved!', 'green'))
 
 	print(colored('\nEDA complete!', 'green'))
