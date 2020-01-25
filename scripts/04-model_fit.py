@@ -1,6 +1,6 @@
 # Author: Jack Tan
 # Contributer: Jarvis Nederlof
-# date: 2020-01-25
+# Date: 2020-01-25
 
 """
 This script takes processed data from the 'data' folder in the project repostiory
