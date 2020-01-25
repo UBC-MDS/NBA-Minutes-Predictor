@@ -12,7 +12,7 @@ Options:
 --url=<url>					URL to data file on remote repository.
 --out_file=<out_file>		Path (including filename and output type) of where to save the file - the script only supports csv filetypes.
 
-Example: python data_download.py --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=../data/2012-18_playerBoxScore.csv
+Example: python scripts/data_download.py --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=../data/2012-18_playerBoxScore.csv
 
 """
 import pandas as pd
