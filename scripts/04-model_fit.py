@@ -15,8 +15,8 @@ Both the file name and the save folder are required as inputs.
 Usage: 04-model_fit.py --file_name=<file_name> --save_folder=<save_folder>
 
 Options:
---file_name=<file_name>         file name of the processed features and targets
---save_folder=<save_folder>	    Folder to save all figures and csv files produced
+--file_name=<file_name>         File name of the processed features and targets
+--save_folder=<save_folder>	Folder to save all figures and csv files produced
 
 Example: python scripts/04-model_fit.py --file_name=player_data_ready.csv --save_folder=results
 """
