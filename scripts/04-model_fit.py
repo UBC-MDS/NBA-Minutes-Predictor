@@ -1,22 +1,22 @@
-# author: Jack Tan
-# contributer: Jarvis Nederlof
-# date: 2020-01-24
+# Author: Jack Tan
+# Contributer: Jarvis Nederlof
+# Date: 2020-01-25
 
 """
 This script takes processed data from the 'data' folder in the project repostiory
 and creates various models to predict the 'playMin' feature using other features.
-Types of model produced includes: baseline, linear regression, XGBoost and LGBM
+Types of model produced includes: baseline, linear regression, XGBoost and LGBM.
 Afterwards, the scripts test the models and calculates the MSE and coefficient of
-determination. Residual plots are created for all models and a feature importance
-plot is created for the GBM model.
+determination on test set. Residual plots are created for all models and a feature
+importance plot is created for the GBM model. These figures are then saved accordingly.
 
 Both the file name and the save folder are required as inputs.
 
 Usage: 04-model_fit.py --file_name=<file_name> --save_folder=<save_folder>
 
 Options:
---file_name=<file_name>         file name of the processed features and targets
---save_folder=<save_folder>	    Folder to save all figures and csv files produced
+--file_name=<file_name>         File name of the processed features and targets
+--save_folder=<save_folder>	Folder to save all figures and csv files produced
 
 Example: python scripts/04-model_fit.py --file_name=player_data_ready.csv --save_folder=results
 """
