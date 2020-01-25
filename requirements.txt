@@ -10,3 +10,5 @@ matplotlib==3.1.2
 plotly-orca==1.2.1
 plotly==4.3.0
 selenium==3.141.0
+termcolor==1.1.0
+ChromeDriver==79.0.3945.36
