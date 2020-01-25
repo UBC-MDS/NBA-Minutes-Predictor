@@ -1,10 +1,10 @@
 ,corr w/ target
-playMin_ewm_std_01,-0.191
-playMin_ewm_std_02,-0.149
-playMin_ewm_std_025,-0.133
-playMin_ewm_std_03,-0.119
-playMin_ewm_std_04,-0.098
-playMin_ewm_std_05,-0.081
-playMin_ewm_std_06,-0.068
-playMin_ewm_std_07,-0.057
-teamLoc,-0.003
+playMin_ewm_std_01,-0.188
+playMin_ewm_std_02,-0.117
+playMin_ewm_std_025,-0.098
+playMin_ewm_std_03,-0.085
+playMin_ewm_std_04,-0.066
+playMin_ewm_std_05,-0.052
+playMin_ewm_std_06,-0.04
+playMin_ewm_std_07,-0.031
+teamLoc,-0.019
