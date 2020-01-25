@@ -1,5 +1,5 @@
 # Author: Jack Tan
-# contributer: Jarvis Nederlof
+# Contributer: Jarvis Nederlof
 # date: 2020-01-25
 
 """
