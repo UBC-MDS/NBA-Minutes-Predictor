@@ -2,7 +2,7 @@
 # date: 2020-01-25
 
 """
-This script takes raw data from the 'data' folder in the project repostiory to perform data preprocessing work.
+This script takes raw data from the 'data' folder in the project repository to perform data preprocessing work.
 Data preprocessing mainly includes making rolling and ewm features used for predicting 'playMin'.
 
 Both the input file path+name and the save folder are required as inputs.
@@ -100,7 +100,7 @@ def main(input_path_file, save_folder):
 	df = pd.DataFrame() 
 
 	# iterate through names to make new df with rolling and ewm features
-	name_list = list(df_org['playDispNm'].unique())[:30]
+	name_list = list(df_org['playDispNm'].unique())
 
 	print(colored("\nData processing in progress:", 'green'))
 	for name in tqdm(name_list):
@@ -140,6 +140,7 @@ def main(input_path_file, save_folder):
 	df.to_csv(str(save_folder)+'/player_data_ready.csv', index=False)
 	print(colored('Data successfully saved!', 'green'))
 
+	print(colored('\nData preprocessing complete!', 'green'))
 ##################################
 ######## Define Functions ########
 ##################################
