@@ -136,7 +136,7 @@ def preprocess(data):
 	"""
 	# Removing columns that can't be interpretted
 	data = data.drop(
-		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos', 'teamLoc'])
 
 	# Test that target is in data
 	assert 'playMin' in data.columns, 'No targets found'
