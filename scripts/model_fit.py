@@ -85,10 +85,10 @@ def main(file_name, save_folder):
 	base = baseline_model()
 
 	# Setup plot figure
-	fig = make_subplots(rows=4, cols=1, subplot_titles=("Baseline Model",
+	fig = make_subplots(rows=4, cols=1, subplot_titles=("GBM Model",
 														"XGB Model",
 														"Linear Regression Model",
-														"GBM Model"))
+														"Baseline Model"))
 
 	# Get the predictions and score each model
 	results = {}
