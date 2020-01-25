@@ -7,8 +7,8 @@ This script takes processed data from the 'data' folder in the project repostior
 and creates various models to predict the 'playMin' feature using other features.
 Types of model produced includes: baseline, linear regression, XGBoost and LGBM.
 Afterwards, the scripts test the models and calculates the MSE and coefficient of
-determination on test set. Residual plots are created for all models and a feature importance
-plot is created for the GBM model.
+determination on test set. Residual plots are created for all models and a feature
+importance plot is created for the GBM model.
 
 Both the file name and the save folder are required as inputs.
 
