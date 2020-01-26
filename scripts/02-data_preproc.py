@@ -126,9 +126,6 @@ def main(input_path_file, save_folder):
 
 		# shift created features by 1 row so that it means the "last n games"          
 		thisguy_result = meaningful_shift(cols_created, cols_keep, thisguy)
-		# test on the meaningful shift
-		assert len(thisguy) == len(thisguy_result), "Number of rows changed when making the meaningful shift!"
-		assert thisguy[cols_created[3]].iloc[3] == thisguy_result[cols_created[3]].iloc[4], "Meaningful shift fails!"
 
 		# append this guy's result table into df
 		df = pd.concat((df, thisguy_result), axis=0, ignore_index=True).copy()

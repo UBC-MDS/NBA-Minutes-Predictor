@@ -1,7 +1,7 @@
 ((*- extends 'article.tplx' -*))
 
 ((* block author *))
-\author{Jarvis Nederlof, Jack Tam, and Roc Zhang}
+\author{Jarvis Nederlof, Jack Tan, and Roc Zhang}
 ((* endblock author *))
 
 ((* block title *))

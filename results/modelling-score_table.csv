@@ -1,3 +1,3 @@
 ,lgbm,xgboost,linaer regression,base model
-MSE,38.24,38.3,39.59,50.24
+MSE,38.23,38.28,39.58,50.24
 Coefficient of Determination,0.65,0.65,0.64,0.55
