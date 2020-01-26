@@ -18,7 +18,7 @@ To replicate the analysis, clone this GiHub repository, install the [dependencie
 
 ```
 # Download the data and save to file
-> Rscript scripts/01-data_download.r --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=data/adfasdf.csv
+> Rscript scripts/01-data_download.r --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=data/2012-18_playerBoxScore.csv
 ```
 ```
 # Wrangle and preprocess the data - generate features and save data to a file
@@ -54,11 +54,14 @@ __A Quick Note__: _To generate the final report requires various latex installs.
 	 - plotly==4.3.0
 	 - selenium==3.141.0
 	 - termcolor==1.1.0
-	 - ChromeDriver==79.0.3945.36
 	 - jupyterlab==1.2.3
  - R version 3.6.1 and R packages:
 	 - tidyverse==1.2.1
 	 - docopt==0.6.2
+ - System requirement:
+	 - ChromeDriver==79.0.3945.36 # $ brew cask install chromedriver
+	 [click here for more information](https://altair-viz.github.io/user_guide/saving_charts.html)
+
 
 
 ## Licence
