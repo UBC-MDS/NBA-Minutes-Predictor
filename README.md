@@ -1,63 +1,66 @@
-# Project Proposal: Predicting the Court Minutes of Players in the NBA
+# NBA Minutes Predictor
 
-- author: Jack Tan
-- contributor: Jarvis Nederlof
+- authors: Jarvis Nederlof, Roc Zhang, Jack Tan
 
-## Motivation and Purpose
+## About
+
+We have built a regression model using a light gradient boosting model to predict the number of expected minutes an NBA basketball player will play in an upcoming game. Our final model performed well on an unseen test data set, achieving mean squared error of 38.24 with a coefficient of determination of 0.65. Both metrics showed better performance compared to a players 5-game average minutes played (our evaluation metric) of 50.24 and 0.55, $MSE$ and $R^2$ respectively. The results represent significant value in the context of Daily Fantasy Sports, and the prediction model could be used as is. However, we note possible areas of further improvement that, if explored, could provide improved predictions, and more value.
+
+The data set used in this project is of the NBA Enhanced Box Score and Standings (2012 - 2018) created by Paul Rossotti, hosted on [Kaggle.com](https://www.kaggle.com/pablote/nba-enhanced-stats#2012-18_playerBoxScore.csv). It was sourced using APIs from [xmlstats](https://erikberg.com/api). A copy of this dataset is hosted on a separate remote repository located [here](https://github.com/jnederlo/nba_data) to allow easy download with authenticating a Kaggle account. The particular data file used can be accessed [here](https://github.com/jnederlo/nba_data/blob/master/2012-18_playerBoxScore.csv). Each row in the data set represents a player's box score statistics for a particular game. The box score statistics are determined by statisticians working for the NBA. There were 151,493 data examples (rows).
+
+## Report
+
+The final report can be found [here]().
+
+## Usage
+
+To replicate the analysis, clone this GiHub repository, install the [dependencies](#dependencies) listed below, and run the following scripts via the command line/terminal from the root of the directory of this project:
+
+```
+# Download the data and save to file
+> Rscript scripts/01-data_download.r --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=data/adfasdf.csv
+```
+```
+# Wrangle and preprocess the data - generate features and save data to a file
+> python scripts/02-data_preproc.py --input_path_file=data/2012-18_playerBoxScore.csv --save_folder=data
+```
+```
+# Run the Exploratory Data Analysis (EDA) - save results in a file
+> python scripts/03-EDA.py --input_path_file=data/player_data_ready.csv --save_folder=results
+```
+```
+# Train the models and make predictions - generate figures for final report
+> python scripts/04-model_fit.py --file_name=player_data_ready.csv --save_folder=results
+```
+```
+# Generate the final report
+> jupyter nbconvert --to pdf --template report.tplx report.ipynb
+```
+__A Quick Note__: _To generate the final report requires various latex installs. In a future release we will add a makefile to run the script, and will wrap the depencies in a docker container which should alleviate the task of reproducing the results and running the scripts without errors. Stay tuned for future realeses planned in the coming weeks._
+
+## Dependencies
+
+ - Python 3.7.5 and Python packages:
+	 - pandas==0.25.2
+	 - numpy==1.17.2
+	 - docopt==0.6.2
+	 - requests==2.20.0
+	 - tqdm==4.41.1
+	 - selenium==3.141.0
+	 - altair==4.0.1
+	 - scikit-learn==0.22.1
+	 - matplotlib==3.1.2
+	 - plotly-orca==1.2.1
+	 - plotly==4.3.0
+	 - selenium==3.141.0
+	 - termcolor==1.1.0
+	 - ChromeDriver==79.0.3945.36
+	 - jupyterlab==1.2.3
+ - R version 3.6.1 and R packages:
+	 - tidyverse==1.2.1
+	 - docopt==0.6.2
 
 
-The motivation behind this project is to help make decisions when placing bets on daily fantasy sports. In other words, we are applying "machine-learning" algorithms to help predict player performance. However, since there are many performance measures, we will only be focusing on predicting the number of minutes that each player will play in an upcoming game. We will focus on predicting minutes played as it represents one of the most important stats when it comes to predicting a players fantasy point production. The daily fantasy sports market represents billions of dollars in investment, and is expected to continue growing with a rule change allowing Sports Betting at the state level by the US Supreme Court in 2018, which makes predicting individual player performance valuable.
+## Licence
 
-In addition to predicting player performance, player minutes can also be used to help viewers decide if they want to purchase tickets to an upcoming game. Some viewers are big fans of certain players so knowing if they will play a little or a lot could help them to make a better purchasing decision.
-
-## Primary Research Question
-
-
-How can we use historical player data to predict the number of minutes that players will play in upcoming NBA matches?
-
-Our Hypothesis is that certain historical stats of a player can be used to make predictions that are better than just using the players' previous n-games average minutes.
-
-## Origin of Data
-
-
-Our dataset is sourced from Kaggle [here](https://www.kaggle.com/pablote/nba-enhanced-stats#2012-18_playerBoxScore.csv).
-
-The data can be downloaded without Kaggle authentication [here](https://github.com/jnederlo/nba_data/blob/master/2012-18_playerBoxScore.csv).
-
-## Data Analysis Plan
-
-
-- First we will clean the data, and transform all data labels to be quantitative. 
-- Then we will create new features based on the data (e.g. 5, 10, and 20 game rolling averages for various stats). 
-- Next, we will split the data into training and testing sets (3:1 ratio). 
-- Then we analyze the data and pick parameters that would make the most sense in predicting our target (i.e. by looking at correlations, etc.). This is an iterative process.
-- Last, we will try different approaches for our predictive model (decision tree, logisitic regression, etc.) and see which one performs the best. The best performing model (or model ensemble) will be reported in our results.
-
-## EDA Analysis and Figures
-
-
-Before doing our EDA analysis, we calculated the rolling averages of the number of court minutes in the past 5, 10 and 20 games for each player and added them as additional features. This was necessary to do before splitting as it represents combining multiple player rows together into new feature columns. Then we split the data into train/test sets.
-
-For our EDA table, we calculated the correlation between the features and our target (actual minutes played). The resulting correlations will give us clues as to what features are likely to be important when predicting the minutes in a players' upcoming game. 
-
-For our resulting figures, we plan on making a residual error plot. This will help us determine if our model has systematic errors in predicting the number of minutes players played. In addition, we can plot our predictions against actual minutes played, alongside the players' 5 game average. We will be using the 5 game average as the benchmark to measure our predictions as highly correlated with actual minutes and represents a good benchmark to try to beat.
-
-## Presentation of Results
-
-
-We plan to present our results by comparing how our model performed vs. the players 5 game average and their actual minutes played. We will pick snapshots of certain players for certain games to highlight the value our predictions hold. These snapshots will be represented as a table like the example below:
-
-| Player Name | 5-Game Average Minutes | Predicted Minutes | Actual Minutes |
-| :--- | ---: | ---: | ---: |
-|Player1 Name | x_1 minutes | x_1 minutes | x_1 minutes |
-|Player2 Name | x_2 minutes | x_2 minutes | x_2 minutes |
-|Player3 Name | x_3 minutes | x_3 minutes | x_3 minutes |
-|Player4 Name | x_4 minutes | x_4 minutes | x_4 minutes |
-..etc
-
-Additionally, we will display a table outlining the results of different models compared to the results of our best derived model.
-
-Finally, more presentations will be developed throughout the completion of this project.
-
-
-
+The NBA Minutes Predictor materials here are licensed under the MIT License. If re-using/re-mixing please provide attribution and link to this repository.
