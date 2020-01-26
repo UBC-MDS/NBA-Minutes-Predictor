@@ -10,7 +10,7 @@ The data set used in this project is of the NBA Enhanced Box Score and Standings
 
 ## Report
 
-The final report can be found [here]().
+The final report can be found [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/report.pdf).
 
 ## Usage
 
