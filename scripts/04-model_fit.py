@@ -68,7 +68,7 @@ def main(file_name, save_folder):
 
 	# Validate the save_foler directory exists or make folder
 	if os.path.exists(save_folder) == False:
-		if os.path.exists(str('../' + save_folder) == False):
+		if os.path.exists(str('../' + save_folder)) == False:
 			try:
 				os.makedirs(save_folder)
 			except:
