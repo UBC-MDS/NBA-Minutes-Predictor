@@ -10,7 +10,7 @@ The data set used in this project is of the NBA Enhanced Box Score and Standings
 
 ## Report
 
-The final report can be found [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/report.pdf).
+The final report can be found [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/report.pdf) . 
 
 ## Usage
 
@@ -59,7 +59,7 @@ __A Quick Note__: _To generate the final report requires various latex installs.
 	 - tidyverse==1.2.1
 	 - docopt==0.6.2
  - System requirement:
-	 - ChromeDriver==79.0.3945.36 # $ brew cask install chromedriver   
+	 - ChromeDriver==79.0.3945.36 # $ brew cask install chromedriver
 	 [click here for more information](https://altair-viz.github.io/user_guide/saving_charts.html)
 
 
