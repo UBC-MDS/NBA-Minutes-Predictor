@@ -27,7 +27,9 @@ main <- function(url, out_file) {
 
 	data <- read_csv(toString(url))
 	print("Raw data successfully loaded!")
-	  
+	
+	dir.create(file.path('.', 'data'), showWarnings = FALSE)
+
 	write_csv(data, path = toString(out_file))
 	print("\nRaw data successfullly saved!")
 }
