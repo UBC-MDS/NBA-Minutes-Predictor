@@ -36,7 +36,33 @@ To replicate the analysis, clone this GiHub repository, install the [dependencie
 # Generate the final report
 > jupyter nbconvert --to pdf --template report.tplx report.ipynb
 ```
-__A Quick Note__: _To generate the final report requires various latex installs. In a future release we will add a makefile to run the script, and will wrap the depencies in a docker container which should alleviate the task of reproducing the results and running the scripts without errors. Stay tuned for future realeses planned in the coming weeks._
+
+Alternatively, you can use `make` commands from the root of the directory of this project to reproduce the analysis. The commands are listed as fllows and click [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Makefile) to review the `Makefile`.  
+```
+# run the whole workflow
+make all
+
+# Download the data and save to file
+make data/2012-18_playerBoxScore.csv
+
+# Wrangle and preprocess the data - generate features and save data to a file
+make data/player_data_ready.csv
+
+# Run the Exploratory Data Analysis (EDA) - save results in a file
+make results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr_line.png results/EDA-hist_y.png
+
+# Train the models and make predictions - generate figures for final report
+make results/modelling-gbm_importance.png results/modelling-residual_plot.png results/modelling-score_table.csv 
+
+# Generate the final report
+make report.pdf
+
+# Clean all the workflow outputs
+make clean
+```
+
+__A Quick Note__: _To generate the final report requires various latex installs. In a future release we will wrap the depencies in a docker container which should alleviate the task of reproducing the results and running the scripts without errors. Stay tuned for future realeses planned in the coming weeks._
+
 
 ## Dependencies
 
