@@ -12,3 +12,6 @@ plotly==4.3.0
 selenium==3.141.0
 termcolor==1.1.0
 ChromeDriver==79.0.3945.36
+jupyterlab==1.2.3
+xgboost==0.90
+lightgbm==2.3.1
