@@ -127,7 +127,12 @@ def main(file_name, save_folder):
 		raise
 
 	# Save the feature importance from LGBM model
-	feature_importance(lgb, X_test, save_folder)
+	try:
+		feature_importance(lgb, X_test, save_folder)
+		print(colored('Saved feature importance figure! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save feature importance figure!', 'red'))
+		raise
 
 class baseline_model:
 	def predict(self, X):
