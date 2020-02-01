@@ -383,6 +383,8 @@ def feature_importance(gbm, X_test, save_folder):
 	).properties(
 		title='Importance of Different Features'
 	)
+	assert gbm_features != 0, 'This should not be true!'
+	print(colored('GBM features plot valid! Test passed!', 'green'))
 	try:
 		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=5.0)
 	except:
