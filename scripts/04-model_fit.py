@@ -151,12 +151,12 @@ def preprocess(data):
 	data -- (pd DataFrame) The loaded data.
 	"""
 	# Removing columns that can't be interpretted
-	data = data.drop(
-		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+	try:
+		data = data.drop(
+			columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
 
 	# Test that target is in data
-	assert 'playMin' in data.columns, 'No targets found'
-	# print('Test 1 passed!')
+	assert 'playMin' in data.columns, 'No targets found!'
 
 	# Splitting data into training and testing
 	X, y = data.loc[:, data.columns != 'playMin'], data['playMin']
@@ -164,6 +164,9 @@ def preprocess(data):
 														y,
 														random_state=100,
 														test_size=0.25)
+
+	assert X_train != X_test, 'Training and testing data are the same!'
+	print(colored('Successfully split data, test 1 passed!', 'green'))
 	return X_train, y_train, X_test, y_test
 
 def lgbm_model(X_train, y_train, X_test, y_test):
@@ -184,6 +187,8 @@ def lgbm_model(X_train, y_train, X_test, y_test):
 	gbm = lgb.LGBMRegressor(num_leaves=31,
 							learning_rate=0.1,
 							n_estimators=60)
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 2 passed!', 'green'))
 	gbm.fit(X_train, y_train,
 			eval_set=[(X_test, y_test)],
 			eval_metric='l2',
@@ -217,6 +222,8 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 			  'objective': 'reg:squarederror',
 			  'eval_metric': ['rmse'],
 			  'verbosity': 0}
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 3 passed!', 'green'))
 	xgb = XGBRegressor(**params).fit(X_train, y_train)
 	print(colored('Finished Training XGBoost Model\n', 'green'))
 	return xgb
@@ -237,6 +244,8 @@ def linear_model(X_train, y_train, X_test, y_test):
 	print(colored("Training Linear Regression Model", 'cyan'))
 	# Linear Regression Model
 	lr_model = LinearRegression()
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 3 passed!', 'green'))
 	lr_model.fit(X=X_train, y=y_train)
 	print(colored('Finished Training Linear Regression Model\n', 'green'))
 	return lr_model
@@ -270,7 +279,7 @@ def scoring(pred, y_test):
 	mse = round(mean_squared_error(y_test, pred), 2)
 	r2 = round(r2_score(y_test, pred), 2)
 	assert mse > 0, 'Mean squared error should be greater than 0!'
-	# print('Test 2 passed!')
+	print('MSE valid! Test passed!')
 	return mse, r2
 
 def calc_residuals(pred, y_test, model_name):
@@ -286,7 +295,9 @@ def calc_residuals(pred, y_test, model_name):
 	model_name -- (str) the name of the model
 	"""
 	# Calculating residuals for different models
+	assert len(pred) == len(y_test), 'Prediction and test sizes do not match!'
 	residual = pred - y_test
+	print(colored('Successfully calculated residuals! Test passed!', 'green'))
 	if model_name == 'base model':
 		df = pd.DataFrame(data={'x': pred, 'y': residual}).groupby(['x']).mean().reset_index()
 	else:
