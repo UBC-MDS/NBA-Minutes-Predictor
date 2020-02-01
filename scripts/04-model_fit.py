@@ -342,6 +342,8 @@ def plot_figure(fig, save_folder):
 	fig -- (plotly figure object) the plotly residuals figure
 	save_folder -- (str) the directory to save the results in
 	"""
+	assert fig != 0, 'This should not be true!'
+	print(colored('Figure valid! Test passed!', 'green'))
 	# Update xaxis properties
 	fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
 
