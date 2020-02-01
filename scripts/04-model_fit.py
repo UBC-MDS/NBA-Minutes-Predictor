@@ -52,9 +52,9 @@ opt = docopt(__doc__)
 def main(file_name, save_folder):
 	# Load the processed data from csv
 	# e.g. 'player_data_ready.csv'
-	
+
 	print(colored("\nWARNING: This script takes about 1 minute to run\n", 'yellow'))
-	
+
 	# Validate the file-path to load file
 	path_str = str('../data/' + file_name)
 	if os.path.exists(path_str) == False:
@@ -71,6 +71,7 @@ def main(file_name, save_folder):
 		if os.path.exists(str('../' + save_folder)) == False:
 			try:
 				os.makedirs(save_folder)
+				print(colored('Successfully created folder for save data! Test passed!', 'green'))
 			except:
 				print(colored('ERROR: Path to save directory is not valid!', 'red'))
 				raise
@@ -108,9 +109,14 @@ def main(file_name, save_folder):
 
 	# Get the model results into a dataframe
 	df = pd.DataFrame(data=results, index=['MSE', 'R^2'])
-	
+
 	# Save the results dataframe
-	save_results(df, save_folder)
+	try:
+		save_results(df, save_folder)
+		print(colored('Saved results to dataframe! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save results to dataframe!', 'red'))
+		raise
 
 	# Save the plotting figure
 	plot_figure(fig, save_folder)
@@ -141,7 +147,7 @@ def preprocess(data):
 	# Test that target is in data
 	assert 'playMin' in data.columns, 'No targets found'
 	# print('Test 1 passed!')
-	
+
 	# Splitting data into training and testing
 	X, y = data.loc[:, data.columns != 'playMin'], data['playMin']
 	X_train, X_test, y_train, y_test = train_test_split(X,
@@ -155,7 +161,7 @@ def lgbm_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the LGBM model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -181,7 +187,7 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the XG Boost model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -210,7 +216,7 @@ def linear_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the Linear Regression model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -279,12 +285,12 @@ def calc_residuals(pred, y_test, model_name):
 					   id_vars=['x'],
 					   value_vars=['y'],
 					   value_name='Mean Residual')
-	
+
 	# Bin the dataframe with a 0.1 bin_size on the actuals
 	bins = np.arange(0, np.max(df.loc[:, 'x']), .1)
-	preds_binned = preds_df.groupby(pd.cut(preds_df['x'], 
+	preds_binned = preds_df.groupby(pd.cut(preds_df['x'],
 									bins,
-									labels=False), 
+									labels=False),
 									as_index=False).mean()
 	return preds_binned
 
