@@ -324,12 +324,13 @@ def save_results(df, save_folder):
 	df -- (pd DataFrame) the models results metrics
 	save_folder -- (str) the directory to save the results in
 	"""
+	assert df != 0, 'This should not be true!'
+	print(colored('Dataframe valid! Test passed!', 'green'))
 	try:
 		df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
 	except:
 		df.to_csv(str(save_folder + '/modelling-score_table.csv'))
 		# print(colored('ERROR: Save folder is not valid!', 'red'))
-		# raise
 	print(colored(f'Saved Model Results in /{save_folder} directory', 'green'))
 
 def plot_figure(fig, save_folder):
