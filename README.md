@@ -81,6 +81,8 @@ __A Quick Note__: _To generate the final report requires various latex installs.
 	 - selenium==3.141.0
 	 - termcolor==1.1.0
 	 - jupyterlab==1.2.3
+	 - lightgbm==2.3.1
+	 - xgboost==0.90
  - R version 3.6.1 and R packages:
 	 - tidyverse==1.2.1
 	 - docopt==0.6.2

@@ -86,13 +86,13 @@ def main(file_name, save_folder):
 
 	# Setup plot figure
 	fig = make_subplots(rows=4, cols=1, subplot_titles=("LGBM Model",
-														"XGB Model",
+														"XGboost Model",
 														"Linear Regression Model",
-														"Baseline Model"))
+														"Base Model (5 game Ave."))
 
 	# Get the predictions and score each model
 	results = {}
-	for i, model in enumerate([(lgb, 'lgbm'), (xgb, 'xgboost'), (lm, 'linaer regression'), (base, 'base model')]):
+	for i, model in enumerate([(lgb, 'LGBM'), (xgb, 'XGboost'), (lm, 'Linear Regression'), (base, 'Base Model (5 Game Ave')]):
 		# Get the predictions
 		preds = predictions(model[0], X_test)
 		# Get the scoring metrics
@@ -107,7 +107,7 @@ def main(file_name, save_folder):
 								 col=1)
 
 	# Get the model results into a dataframe
-	df = pd.DataFrame(data=results, index=['MSE', 'Coefficient of Determination'])
+	df = pd.DataFrame(data=results, index=['MSE', 'R^2'])
 	
 	# Save the results dataframe
 	save_results(df, save_folder)

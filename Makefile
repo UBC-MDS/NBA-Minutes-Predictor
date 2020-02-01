@@ -1,3 +1,10 @@
+# author: Roc Zhang
+# date: 2020-01-28
+
+# This file runs all of the analysis sequentially, to reproduce all of the code and findings contained within this repository.
+# `Make all` will run all of the scripts and generate the final report.
+# 'Make clean` will remove all of the generate files (images, results, report).
+
 # the `all` command that runs the whole workflow
 all : data/2012-18_playerBoxScore.csv data/player_data_ready.csv results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr_line.png results/EDA-hist_y.png results/modelling-gbm_importance.png results/modelling-residual_plot.png results/modelling-score_table.csv report.pdf
 
