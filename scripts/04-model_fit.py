@@ -119,7 +119,12 @@ def main(file_name, save_folder):
 		raise
 
 	# Save the plotting figure
-	plot_figure(fig, save_folder)
+	try:
+		plot_figure(fig, save_folder)
+		print(colored('Saved residual figure! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save residual figure!', 'red'))
+		raise
 
 	# Save the feature importance from LGBM model
 	feature_importance(lgb, X_test, save_folder)
