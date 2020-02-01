@@ -15,8 +15,8 @@ Options:
 Example: Rscript scripts/01-data_download.r --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=data/2012-18_playerBoxScore.csv
 "-> doc
 
-library(tidyverse)
-library(docopt)
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(docopt))
 
 opt <- docopt(doc)
 
@@ -25,7 +25,7 @@ main <- function(url, out_file) {
 	Download a dataset from a remote repository and save to the `data` directory.
 	"
 
-	data <- read_csv(toString(url))
+	data <- read_csv(toString(url), col_types = cols())
 	print("Raw data successfully loaded!")
 	
 	dir.create(file.path('.', 'data'), showWarnings = FALSE)
