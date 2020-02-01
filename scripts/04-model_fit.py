@@ -52,9 +52,9 @@ opt = docopt(__doc__)
 def main(file_name, save_folder):
 	# Load the processed data from csv
 	# e.g. 'player_data_ready.csv'
-	
+
 	print(colored("\nWARNING: This script takes about 1 minute to run\n", 'yellow'))
-	
+
 	# Validate the file-path to load file
 	path_str = str('../data/' + file_name)
 	if os.path.exists(path_str) == False:
@@ -71,6 +71,7 @@ def main(file_name, save_folder):
 		if os.path.exists(str('../' + save_folder)) == False:
 			try:
 				os.makedirs(save_folder)
+				print(colored('Successfully created folder for save data! Test passed!', 'green'))
 			except:
 				print(colored('ERROR: Path to save directory is not valid!', 'red'))
 				raise
@@ -108,15 +109,30 @@ def main(file_name, save_folder):
 
 	# Get the model results into a dataframe
 	df = pd.DataFrame(data=results, index=['MSE', 'R^2'])
-	
+
 	# Save the results dataframe
-	save_results(df, save_folder)
+	try:
+		save_results(df, save_folder)
+		print(colored('Saved results to dataframe! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save results to dataframe!', 'red'))
+		raise
 
 	# Save the plotting figure
-	plot_figure(fig, save_folder)
+	try:
+		plot_figure(fig, save_folder)
+		print(colored('Saved residual figure! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save residual figure!', 'red'))
+		raise
 
 	# Save the feature importance from LGBM model
-	feature_importance(lgb, X_test, save_folder)
+	try:
+		feature_importance(lgb, X_test, save_folder)
+		print(colored('Saved feature importance figure! Test Passed!', 'green'))
+	except:
+		print(colored('Could not save feature importance figure!', 'red'))
+		raise
 
 class baseline_model:
 	def predict(self, X):
@@ -135,19 +151,22 @@ def preprocess(data):
 	data -- (pd DataFrame) The loaded data.
 	"""
 	# Removing columns that can't be interpretted
-	data = data.drop(
-		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+	try:
+		data = data.drop(
+			columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
 
 	# Test that target is in data
-	assert 'playMin' in data.columns, 'No targets found'
-	# print('Test 1 passed!')
-	
+	assert 'playMin' in data.columns, 'No targets found!'
+
 	# Splitting data into training and testing
 	X, y = data.loc[:, data.columns != 'playMin'], data['playMin']
 	X_train, X_test, y_train, y_test = train_test_split(X,
 														y,
 														random_state=100,
 														test_size=0.25)
+
+	assert X_train != X_test, 'Training and testing data are the same!'
+	print(colored('Successfully split data, test 1 passed!', 'green'))
 	return X_train, y_train, X_test, y_test
 
 def lgbm_model(X_train, y_train, X_test, y_test):
@@ -155,7 +174,7 @@ def lgbm_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the LGBM model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -168,6 +187,8 @@ def lgbm_model(X_train, y_train, X_test, y_test):
 	gbm = lgb.LGBMRegressor(num_leaves=31,
 							learning_rate=0.1,
 							n_estimators=60)
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 2 passed!', 'green'))
 	gbm.fit(X_train, y_train,
 			eval_set=[(X_test, y_test)],
 			eval_metric='l2',
@@ -181,7 +202,7 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the XG Boost model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -201,6 +222,8 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 			  'objective': 'reg:squarederror',
 			  'eval_metric': ['rmse'],
 			  'verbosity': 0}
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 3 passed!', 'green'))
 	xgb = XGBRegressor(**params).fit(X_train, y_train)
 	print(colored('Finished Training XGBoost Model\n', 'green'))
 	return xgb
@@ -210,7 +233,7 @@ def linear_model(X_train, y_train, X_test, y_test):
 	Initialize and fit the Linear Regression model.
 
 	Return the fitted model.
-	
+
 	Parameters:
 	-----------
 	X_train -- (pd DataFrame) The training data
@@ -221,6 +244,8 @@ def linear_model(X_train, y_train, X_test, y_test):
 	print(colored("Training Linear Regression Model", 'cyan'))
 	# Linear Regression Model
 	lr_model = LinearRegression()
+	assert X_train != y_train, 'Training data not valid!'
+	print(colored('Training data valid!, test 3 passed!', 'green'))
 	lr_model.fit(X=X_train, y=y_train)
 	print(colored('Finished Training Linear Regression Model\n', 'green'))
 	return lr_model
@@ -254,7 +279,7 @@ def scoring(pred, y_test):
 	mse = round(mean_squared_error(y_test, pred), 2)
 	r2 = round(r2_score(y_test, pred), 2)
 	assert mse > 0, 'Mean squared error should be greater than 0!'
-	# print('Test 2 passed!')
+	print('MSE valid! Test passed!')
 	return mse, r2
 
 def calc_residuals(pred, y_test, model_name):
@@ -270,7 +295,9 @@ def calc_residuals(pred, y_test, model_name):
 	model_name -- (str) the name of the model
 	"""
 	# Calculating residuals for different models
+	assert len(pred) == len(y_test), 'Prediction and test sizes do not match!'
 	residual = pred - y_test
+	print(colored('Successfully calculated residuals! Test passed!', 'green'))
 	if model_name == 'base model':
 		df = pd.DataFrame(data={'x': pred, 'y': residual}).groupby(['x']).mean().reset_index()
 	else:
@@ -279,12 +306,12 @@ def calc_residuals(pred, y_test, model_name):
 					   id_vars=['x'],
 					   value_vars=['y'],
 					   value_name='Mean Residual')
-	
+
 	# Bin the dataframe with a 0.1 bin_size on the actuals
 	bins = np.arange(0, np.max(df.loc[:, 'x']), .1)
-	preds_binned = preds_df.groupby(pd.cut(preds_df['x'], 
+	preds_binned = preds_df.groupby(pd.cut(preds_df['x'],
 									bins,
-									labels=False), 
+									labels=False),
 									as_index=False).mean()
 	return preds_binned
 
@@ -297,12 +324,13 @@ def save_results(df, save_folder):
 	df -- (pd DataFrame) the models results metrics
 	save_folder -- (str) the directory to save the results in
 	"""
+	assert df != 0, 'This should not be true!'
+	print(colored('Dataframe valid! Test passed!', 'green'))
 	try:
 		df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
 	except:
 		df.to_csv(str(save_folder + '/modelling-score_table.csv'))
 		# print(colored('ERROR: Save folder is not valid!', 'red'))
-		# raise
 	print(colored(f'Saved Model Results in /{save_folder} directory', 'green'))
 
 def plot_figure(fig, save_folder):
@@ -314,6 +342,8 @@ def plot_figure(fig, save_folder):
 	fig -- (plotly figure object) the plotly residuals figure
 	save_folder -- (str) the directory to save the results in
 	"""
+	assert fig != 0, 'This should not be true!'
+	print(colored('Figure valid! Test passed!', 'green'))
 	# Update xaxis properties
 	fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
 
@@ -353,6 +383,8 @@ def feature_importance(gbm, X_test, save_folder):
 	).properties(
 		title='Importance of Different Features'
 	)
+	assert gbm_features != 0, 'This should not be true!'
+	print(colored('GBM features plot valid! Test passed!', 'green'))
 	try:
 		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=5.0)
 	except:
