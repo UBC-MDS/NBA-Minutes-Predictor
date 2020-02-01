@@ -151,9 +151,8 @@ def preprocess(data):
 	data -- (pd DataFrame) The loaded data.
 	"""
 	# Removing columns that can't be interpretted
-	try:
-		data = data.drop(
-			columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
+	data = data.drop(
+		columns=['playDispNm', 'gmDate', 'teamAbbr', 'playPos'])
 
 	# Test that target is in data
 	assert 'playMin' in data.columns, 'No targets found!'
@@ -165,8 +164,8 @@ def preprocess(data):
 														random_state=100,
 														test_size=0.25)
 
-	assert X_train != X_test, 'Training and testing data are the same!'
-	print(colored('Successfully split data, test 1 passed!', 'green'))
+	assert len(X_train) != len(X_test), 'Improper split of data'
+	# print(colored('Successfully split data, test 1 passed!', 'green'))
 	return X_train, y_train, X_test, y_test
 
 def lgbm_model(X_train, y_train, X_test, y_test):
@@ -187,12 +186,11 @@ def lgbm_model(X_train, y_train, X_test, y_test):
 	gbm = lgb.LGBMRegressor(num_leaves=31,
 							learning_rate=0.1,
 							n_estimators=60)
-	assert X_train != y_train, 'Training data not valid!'
-	print(colored('Training data valid!, test 2 passed!', 'green'))
 	gbm.fit(X_train, y_train,
 			eval_set=[(X_test, y_test)],
 			eval_metric='l2',
 			verbose=False)
+	assert gbm.best_score_, "LGBM Model didn't fit properly"
 	print(colored('Finished Training LGBM Model\n', 'green'))
 	return gbm
 
@@ -210,7 +208,6 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 	X_test -- (pd DataFrame) The testing data
 	Y_test -- (pd DataFrame) The testing target
 	"""
-	print(colored("Training XGBoost Model", 'cyan'))
 	# XGBoost MODEL:
 	params = {'n_estimators': 60,
 			  'max_depth': 5,
@@ -222,8 +219,7 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 			  'objective': 'reg:squarederror',
 			  'eval_metric': ['rmse'],
 			  'verbosity': 0}
-	assert X_train != y_train, 'Training data not valid!'
-	print(colored('Training data valid!, test 3 passed!', 'green'))
+	print(colored("Training XGBoost Model", 'cyan'))
 	xgb = XGBRegressor(**params).fit(X_train, y_train)
 	print(colored('Finished Training XGBoost Model\n', 'green'))
 	return xgb
@@ -243,10 +239,8 @@ def linear_model(X_train, y_train, X_test, y_test):
 	"""
 	print(colored("Training Linear Regression Model", 'cyan'))
 	# Linear Regression Model
-	lr_model = LinearRegression()
-	assert X_train != y_train, 'Training data not valid!'
-	print(colored('Training data valid!, test 3 passed!', 'green'))
-	lr_model.fit(X=X_train, y=y_train)
+	lr_model = LinearRegression().fit(X=X_train, y=y_train)
+	assert len(lr_model.coef_) > 0, 'Linear Regression did not fit properly' 
 	print(colored('Finished Training Linear Regression Model\n', 'green'))
 	return lr_model
 
@@ -261,7 +255,12 @@ def predictions(model, X_test):
 	model -- (model object) the trained model
 	X_test -- (pd DataFrame) the testing data
 	"""
-	return model.predict(X_test)
+	try:
+		preds = model.predict(X_test)
+	except:
+		print(colored("Model didn't train properly", 'red'))
+		raise
+	return preds
 
 def scoring(pred, y_test):
 	"""
@@ -279,7 +278,6 @@ def scoring(pred, y_test):
 	mse = round(mean_squared_error(y_test, pred), 2)
 	r2 = round(r2_score(y_test, pred), 2)
 	assert mse > 0, 'Mean squared error should be greater than 0!'
-	print('MSE valid! Test passed!')
 	return mse, r2
 
 def calc_residuals(pred, y_test, model_name):
@@ -296,8 +294,8 @@ def calc_residuals(pred, y_test, model_name):
 	"""
 	# Calculating residuals for different models
 	assert len(pred) == len(y_test), 'Prediction and test sizes do not match!'
+	
 	residual = pred - y_test
-	print(colored('Successfully calculated residuals! Test passed!', 'green'))
 	if model_name == 'base model':
 		df = pd.DataFrame(data={'x': pred, 'y': residual}).groupby(['x']).mean().reset_index()
 	else:
@@ -306,6 +304,9 @@ def calc_residuals(pred, y_test, model_name):
 					   id_vars=['x'],
 					   value_vars=['y'],
 					   value_name='Mean Residual')
+
+	# Check that the df is not empty
+	assert df.empty == False, 'Empty residuals dataframe'
 
 	# Bin the dataframe with a 0.1 bin_size on the actuals
 	bins = np.arange(0, np.max(df.loc[:, 'x']), .1)
@@ -324,13 +325,11 @@ def save_results(df, save_folder):
 	df -- (pd DataFrame) the models results metrics
 	save_folder -- (str) the directory to save the results in
 	"""
-	assert df != 0, 'This should not be true!'
-	print(colored('Dataframe valid! Test passed!', 'green'))
+	assert df.empty == False, 'This should not be true!'
 	try:
 		df.to_csv(str('../' + save_folder + '/modelling-score_table.csv'))
 	except:
 		df.to_csv(str(save_folder + '/modelling-score_table.csv'))
-		# print(colored('ERROR: Save folder is not valid!', 'red'))
 	print(colored(f'Saved Model Results in /{save_folder} directory', 'green'))
 
 def plot_figure(fig, save_folder):
@@ -342,8 +341,7 @@ def plot_figure(fig, save_folder):
 	fig -- (plotly figure object) the plotly residuals figure
 	save_folder -- (str) the directory to save the results in
 	"""
-	assert fig != 0, 'This should not be true!'
-	print(colored('Figure valid! Test passed!', 'green'))
+	assert fig != None, 'This should not be true!'
 	# Update xaxis properties
 	fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
 
@@ -383,8 +381,7 @@ def feature_importance(gbm, X_test, save_folder):
 	).properties(
 		title='Importance of Different Features'
 	)
-	assert gbm_features != 0, 'This should not be true!'
-	print(colored('GBM features plot valid! Test passed!', 'green'))
+	assert gbm_features != None, 'This should not be true!'
 	try:
 		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=5.0)
 	except:
