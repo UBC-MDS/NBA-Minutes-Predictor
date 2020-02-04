@@ -49,7 +49,7 @@ make data/2012-18_playerBoxScore.csv
 make data/player_data_ready.csv
 
 # Run the Exploratory Data Analysis (EDA) - save results in a file
-make results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr_line.png results/EDA-hist_y.png
+make results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr.png results/EDA-hist_y.png
 
 # Train the models and make predictions - generate figures for final report
 make results/modelling-gbm_importance.png results/modelling-residual_plot.png results/modelling-score_table.csv 

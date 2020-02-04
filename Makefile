@@ -6,7 +6,7 @@
 # 'Make clean` will remove all of the generate files (images, results, report).
 
 # the `all` command that runs the whole workflow
-all : data/2012-18_playerBoxScore.csv data/player_data_ready.csv results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr_line.png results/EDA-hist_y.png results/modelling-gbm_importance.png results/modelling-residual_plot.png results/modelling-score_table.csv report.pdf
+all : data/2012-18_playerBoxScore.csv data/player_data_ready.csv results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr.png results/EDA-hist_y.png results/modelling-gbm_importance.png results/modelling-residual_plot.png results/modelling-score_table.csv report.pdf
 
 # Download the data and save to file
 data/2012-18_playerBoxScore.csv : scripts/01-data_download.r
@@ -17,7 +17,7 @@ data/player_data_ready.csv : data/2012-18_playerBoxScore.csv data/2012-18_player
 	python scripts/02-data_preproc.py --input_path_file=data/2012-18_playerBoxScore.csv --save_folder=data
 
 # Run the Exploratory Data Analysis (EDA) - save results in a file
-results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr_line.png results/EDA-hist_y.png : scripts/03-EDA.py data/player_data_ready.csv
+results/EDA-correl_df_neg_9.csv results/EDA-correl_df_pos_20.csv results/EDA-feat_corr.png results/EDA-hist_y.png : scripts/03-EDA.py data/player_data_ready.csv
 	python scripts/03-EDA.py --input_path_file=data/player_data_ready.csv --save_folder=results
 
 # Train the models and make predictions - generate figures for final report
