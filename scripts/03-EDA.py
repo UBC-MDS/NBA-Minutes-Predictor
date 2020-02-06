@@ -133,7 +133,7 @@ def main(input_path_file, save_folder):
 	        anchor='start')
 	
 	# Save chart object
-	correl_loli.save(str(save_folder)+'/EDA-feat_corr.png', scale_factor=.50)
+	correl_loli.save(str(save_folder)+'/EDA-feat_corr.png', scale_factor=1.0)
 	print(colored('EDA-feat_corr.png successfully saved!', 'green'))
 
 	print(colored('\nEDA complete!', 'green'))
