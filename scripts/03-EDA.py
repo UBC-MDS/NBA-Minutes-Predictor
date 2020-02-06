@@ -105,19 +105,36 @@ def main(input_path_file, save_folder):
 	print(colored('EDA-correl_df_neg_9.csv successfully saved!', 'green'))
 
 	# make and save the visualization of feature importance
+	correl_df.reset_index(inplace=True)
+	correl_df.columns = ['stat', 'correlation']
 	sort = list(correl_df.reset_index()['index'])
-	corr_line = alt.Chart(correl_df.reset_index()).mark_line().encode(
-		x=alt.X('index', sort=sort, 
-			axis=alt.Axis(title='Features')),
-		y=alt.Y('corr w/ target:Q', 
-			axis=alt.Axis(title='Correlation with the target'))
-	).properties(
-		width=600,
-		height=200
-	).configure_axisX(labelAngle = -40).properties(title="Features' correlation with the target")	
-
-	corr_line.save(str(save_folder)+'/EDA-feat_corr_line.png', scale_factor=2.0)
-	print(colored('EDA-feat_corr_line.png successfully saved!', 'green'))
+	# Base bar chart
+	c1 = alt.Chart(correl_df).mark_bar(size=1, color='black').encode(
+	    alt.X('correlation:Q',
+	          title='Correlation',
+	          scale=alt.Scale(zero=False, domain=[-.3, 1])),
+	    alt.Y('stat:N', title="", sort=sort))
+	# Base circle chart
+	c2 = alt.Chart(correl_df).mark_circle(color='black', size=420).encode(
+	    alt.X('correlation:Q', scale=alt.Scale(zero=False, domain=[-.4, 1])),
+	    alt.Y('stat:N', sort=sort))
+	# Base text chart
+	c3 = alt.Chart(correl_df).mark_text(color='white', size=8).encode(
+	    alt.X('correlation:Q', scale=alt.Scale(zero=False, domain=[-.4, 1])),
+	    alt.Y('stat:N', sort=sort),
+	    text=alt.Text('correlation:Q', format='.2f'))
+	# Final chart object
+	correl_loli = (c1 + c2 + c3).properties(
+	        title='Feature Correlation with Target',
+	        width=400
+	    ).configure_title(
+	        fontSize=20,
+	        font='Courier',
+	        anchor='start')
+	
+	# Save chart object
+	correl_loli.save(str(save_folder)+'/EDA-feat_corr.png', scale_factor=1.0)
+	print(colored('EDA-feat_corr.png successfully saved!', 'green'))
 
 	print(colored('\nEDA complete!', 'green'))
 
