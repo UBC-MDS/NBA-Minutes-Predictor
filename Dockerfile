@@ -22,8 +22,9 @@ RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_6
 
 RUN apt-get update && apt install -y chromium && apt-get install -y libnss3 && apt-get install unzip
 
-RUN apt-get install r-base r-base-dev -y 
-	Rscript -e "install.packages('tidyverse')"
+# Install R and it's dependencies
+RUN apt-get install r-base r-base-dev -y \ 
+	Rscript -e "install.packages('tidyverse')" \
 	Rscript -e "install.packages('docopt')"
 
 # Install chromedriver
