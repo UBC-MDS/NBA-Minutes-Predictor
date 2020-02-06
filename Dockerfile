@@ -39,21 +39,21 @@ RUN conda install -y -c conda-forge altair && conda install -y vega_datasets && 
 # WORKDIR /opt/app
 
 # Add the python required packages
-RUN pip install pandas==0.25.2 \
-	pip install numpy==1.17.2 \
-	pip install docopt==0.6.2 \
-	pip install requests==2.20.0 \
-	pip install tqdm==4.41.1 \
-	pip install selenium==3.141.0 \
-	pip install altair==4.0.1 \
-	pip install scikit-learn==0.22.1 \
-	pip install matplotlib==3.1.2 \
-	pip install plotly==4.3.0 \
-	pip install selenium==3.141.0 \
-	pip install termcolor==1.1.0 \
-	pip install ChromeDriver==79.0.3945.36 \
-	pip install jupyterlab==1.2.3 \
-	pip install xgboost==0.90 \
+RUN pip install pandas==0.25.2 && \
+	pip install numpy==1.17.2 && \
+	pip install docopt==0.6.2 && \
+	pip install requests==2.20.0 && \
+	pip install tqdm==4.41.1 && && \
+	pip install selenium==3.141.0 && \
+	pip install altair==4.0.1 && \
+	pip install scikit-learn==0.22.1 && \
+	pip install matplotlib==3.1.2 && \
+	pip install plotly==4.3.0 && \
+	pip install selenium==3.141.0 && \
+	pip install termcolor==1.1.0 && \
+	pip install ChromeDriver==79.0.3945.36 && \
+	pip install jupyterlab==1.2.3 && \
+	pip install xgboost==0.90 && \
 	pip install lightgbm==2.3.1
 
 
