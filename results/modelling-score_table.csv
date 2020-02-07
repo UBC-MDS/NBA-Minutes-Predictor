@@ -1,3 +1,3 @@
-,lgbm,xgboost,linaer regression,base model
+,LGBM,XGboost,Linear Regression,Base Model (5 Game Ave)
 MSE,38.23,38.28,39.58,50.24
-Coefficient of Determination,0.65,0.65,0.64,0.55
+R^2,0.65,0.65,0.64,0.55

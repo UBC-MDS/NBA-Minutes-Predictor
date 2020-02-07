@@ -128,7 +128,7 @@ def main(input_path_file, save_folder):
 	        title='Feature Correlation with Target',
 	        width=400
 	    ).configure_title(
-	        fontSize=20,
+	        fontSize=18,
 	        font='Courier',
 	        anchor='start')
 	

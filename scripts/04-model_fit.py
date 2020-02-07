@@ -28,8 +28,6 @@ import lightgbm as lgb
 from sklearn.linear_model import LinearRegression
 # Plotting
 import altair as alt
-# from plotly.subplots import make_subplots
-# import plotly.graph_objects as go
 # Numerical Packages
 import numpy as np
 import pandas as pd
@@ -85,13 +83,6 @@ def main(file_name, save_folder):
 	lm = linear_model(X_train, y_train, X_test, y_test)
 	base = baseline_model()
 
-	# Setup plot figure
-	# fig = make_subplots(rows=4, cols=1, subplot_titles=("LGBM Model",
-	# 													"XGboost Model",
-	# 													"Linear Regression Model",
-	# 													"Base Model (5 game Ave.)"), 
-	# 													vertical_spacing = 0.05)
-
 	# Get the predictions and score each model
 	results = {}
 	resid_df_comb = pd.DataFrame()
@@ -105,21 +96,21 @@ def main(file_name, save_folder):
 		resid_df = calc_residuals(preds, y_test, model[1])
 		resid_df['model'] = model[1]
 		resid_df_comb = pd.concat((resid_df, resid_df_comb), ignore_index=True)
-		# resid_df_comb = pd.concat((resid_df, resid_df_comb), ignore_index=True)
-		# Add to plot figure
-		# fig.add_trace(go.Scatter(x=resid_df.loc[:, 'x'],
-		# 						 y=resid_df.loc[:, 'Mean Residual'],
-		# 						 mode='markers'),
-		# 						 row=i+1,
-		# 						 col=1)
+
 	fig = alt.Chart(resid_df_comb).mark_circle(size=17, clip=True).encode(
-			alt.Y('Mean Residual', scale=alt.Scale(domain=(-5, 5)), axis=alt.Axis(title='Residuals')),
-			alt.X('x', scale=alt.Scale(domain=(0, 45))),
+			y = alt.Y('Mean Residual', scale=alt.Scale(domain=(-5, 5)), axis=alt.Axis(title='Residuals')),
+			x = alt.X('x', scale=alt.Scale(domain=(0, 45)), axis=alt.Axis(title='Minutes')),
 			color = alt.Color('model', legend=None)
 			).properties(
 				width=400,
 				height=90
-			).facet(facet='model:N', columns=1, spacing=10)
+			).facet(facet='model:N', columns=1, spacing=10
+			).properties(
+				title='Residual Error Plot'
+			).configure_title(
+				fontSize=18,
+				font='Courier',
+				anchor='start')
 
 	# Get the model results into a dataframe
 	df = pd.DataFrame(data=results, index=['MSE', 'R^2'])
@@ -135,7 +126,7 @@ def main(file_name, save_folder):
 	# Save the plotting figure
 	try:
 		# plot_figure(fig, save_folder)
-		fig.save(str(save_folder)+'/modelling-residual_plot.png', scale_factor=2.0)
+		fig.save(str(save_folder)+'/modelling-residual_plot.png', scale_factor=1.0)
 		print(colored('Saved residual figure! Test Passed!', 'green'))
 	except:
 		print(colored('Could not save residual figure!', 'red'))
@@ -347,33 +338,6 @@ def save_results(df, save_folder):
 		df.to_csv(str(save_folder + '/modelling-score_table.csv'))
 	print(colored(f'Saved Model Results in /{save_folder} directory', 'green'))
 
-# def plot_figure(fig, save_folder):
-# 	"""
-# 	Save the residual plots figures.
-
-# 	Parameters:
-# 	-----------
-# 	fig -- (plotly figure object) the plotly residuals figure
-# 	save_folder -- (str) the directory to save the results in
-# 	"""
-# 	assert fig != None, 'This should not be true!'
-# 	# Update xaxis properties
-# 	fig.update_xaxes(title_text="Model Prediction", row=4, col=1)
-
-# 	# Update yaxis properties
-# 	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=1, col=1)
-# 	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=2, col=1)
-# 	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=3, col=1)
-# 	fig.update_yaxes(title_text="Residual", range=[-5, 5], row=4, col=1)
-
-
-# 	fig.update_layout(height=1000, width=800, showlegend=False)
-# 	try:
-# 		fig.write_image(str('../' + save_folder + '/modelling-residual_plot.png'))
-# 	except:
-# 		fig.write_image(str(save_folder + '/modelling-residual_plot.png'))
-# 	print(colored(f'\nSaved Residuals Plot in /{save_folder} directory', 'green'))
-
 def feature_importance(gbm, X_test, save_folder):
 	"""
 	Parameters:
@@ -390,17 +354,22 @@ def feature_importance(gbm, X_test, save_folder):
 
 	# Plot the feature importance
 	gbm_features = alt.Chart(feature_df).mark_bar().encode(
-		x='importance:Q',
+		x=alt.X('importance:Q', title='Importance'),
 		y=alt.Y('features:N', sort=alt.EncodingSortField(
-			field='features', op='count', order='ascending'))
+			field='features', op='count', order='ascending'),
+			title='Features'),
 	).properties(
 		title='Importance of Different Features'
+	).configure_title(
+			fontSize=18,
+			font='Courier',
+			anchor='start'
 	)
 	assert gbm_features != None, 'This should not be true!'
 	try:
-		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=5.0)
+		gbm_features.save(str('../' + save_folder + '/modelling-gbm_importance.png'), scale_factor=1.0)
 	except:
-		gbm_features.save(str(save_folder + '/modelling-gbm_importance.png'), scale_factor=1)
+		gbm_features.save(str(save_folder + '/modelling-gbm_importance.png'), scale_factor=1.0)
 	print(colored(f'\nSaved Features Importance Plot in /{save_folder} directory', 'green'))
 
 if __name__ == "__main__":
