@@ -1,7 +1,7 @@
 # author: Jarvis Nederlof
 # date: 2020-02-06
 # This file builds a Docker container to run the program from start to end for project reproducibility.
-# The docker container is hosted on dockerhub here --> https://hub.docker.com/repository/docker/jnederlo/nba_minutes
+# The docker container is hosted on dockerhub here --> https://hub.docker.com/repository/docker/jnederlo/nba_minutes/general
 # For usage instructions refer to the project README.
 
 # Get base image from trusted source - versioned for reproducibility of languages and packages
