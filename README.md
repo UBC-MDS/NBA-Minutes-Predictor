@@ -77,8 +77,6 @@ If running locally, and not with Docker, make sure you have the required depende
 	 - altair==4.0.1
 	 - scikit-learn==0.22.1
 	 - matplotlib==3.1.2
-	 - plotly-orca==1.2.1
-	 - plotly==4.3.0
 	 - selenium==3.141.0
 	 - termcolor==1.1.0
 	 - jupyterlab==1.2.3
