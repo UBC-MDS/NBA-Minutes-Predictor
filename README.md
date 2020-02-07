@@ -61,7 +61,7 @@ make results/modelling-gbm_importance.png results/modelling-residual_plot.png re
 make report.pdf
 ```
 
-You can rewiew the `Makefile` [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Makefile).
+You can view the `Makefile` [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Makefile).
 
 If running locally, and not with Docker, make sure you have the required dependencies installed.
 
