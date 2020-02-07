@@ -30,7 +30,7 @@ To clean up the analysis type:
 > docker run --rm -v <PATH_ON_YOUR_COMPUTER>:/home/nba_minutes jnederlo/nba_minutes make -C '/home/nba_minutes` clean
 ```
 
-The `Dockerfile` is hosted on Docker Hub and can be viewed [here](https://hub.docker.com/repository/docker/jnederlo/nba_minutes).
+The Docker container is hosted on Docker Hub and can be viewed [here](https://hub.docker.com/repository/docker/jnederlo/nba_minutes/general). The `Dockerfile` can be viewed [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Dockerfile).
 
 ### Run with Make
 
