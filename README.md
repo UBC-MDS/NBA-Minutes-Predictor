@@ -67,6 +67,7 @@ If running locally, and not with Docker, make sure you have the required depende
 
 ## Dependencies
 
+### Python / R / System
  - Python 3.7.5 and Python packages:
 	 - pandas==0.25.2
 	 - numpy==1.17.2
@@ -90,6 +91,10 @@ If running locally, and not with Docker, make sure you have the required depende
 	 [click here for more information](https://altair-viz.github.io/user_guide/saving_charts.html)
 	 - Latex (TeX Live 2019)
 	 [click here for more information](https://nbconvert.readthedocs.io/en/latest/install.html#installing-tex)
+
+### Makefile dependency diagram 
+
+<img src="makefile_dependency.png" alt="drawing" height="170"/>
 
 ## Licence
 
