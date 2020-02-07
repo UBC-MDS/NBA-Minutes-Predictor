@@ -1,6 +1,6 @@
 # NBA Minutes Predictor
 
-- authors: Jarvis Nederlof, Roc Zhang, Jack Tan
+- Authors: Jarvis Nederlof, Roc Zhang, Jack Tan
 
 ## About
 
@@ -14,34 +14,37 @@ The final report can be found [here](https://github.com/UBC-MDS/DSCI_522_group40
 
 ## Usage
 
-To replicate the analysis, clone this GiHub repository, install the [dependencies](#dependencies) listed below, and run the following scripts via the command line/terminal from the root of the directory of this project:
+You can run this analysis a few different ways. Start by cloning/downloading this repository, and navigate to the root of the project using the command line.
+
+### Run with Docker
+
+To run the analysis using Docker type the following (fill <PATH_ON_YOUR_COMPUTER> with the absolute path to the root of this project on your computer):
 
 ```
-# Download the data and save to file
-> Rscript scripts/01-data_download.r --url=https://raw.githubusercontent.com/jnederlo/nba_data/master/2012-18_playerBoxScore.csv --out_file=data/2012-18_playerBoxScore.csv
-```
-```
-# Wrangle and preprocess the data - generate features and save data to a file
-> python scripts/02-data_preproc.py --input_path_file=data/2012-18_playerBoxScore.csv --save_folder=data
-```
-```
-# Run the Exploratory Data Analysis (EDA) - save results in a file
-> python scripts/03-EDA.py --input_path_file=data/player_data_ready.csv --save_folder=results
-```
-```
-# Train the models and make predictions - generate figures for final report
-> python scripts/04-model_fit.py --file_name=player_data_ready.csv --save_folder=results
-```
-```
-# Generate the final report
-> jupyter nbconvert --to pdf --template report.tplx report.ipynb
+> docker run --rm -v <PATH_ON_YOUR_COMPUTER>:/home/nba_minutes jnederlo/nba_minutes make -C '/home/nba_minutes' all
 ```
 
-Alternatively, you can use `make` commands from the root of the directory of this project to reproduce the analysis. The commands are listed as fllows and click [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Makefile) to review the `Makefile`.  
+To clean up the analysis type:
+
 ```
-# run the whole workflow
+> docker run --rm -v <PATH_ON_YOUR_COMPUTER>:/home/nba_minutes jnederlo/nba_minutes make -C '/home/nba_minutes` clean
+```
+
+The `Dockerfile` is hosted on Docker Hub and can be viewed [here](https://hub.docker.com/repository/docker/jnederlo/nba_minutes).
+
+### Run with Make
+
+Alternatively, you can use `make` commands from the root of the directory of this project to reproduce the analysis. The commands are listed as follows:  
+
+```
+##### General commands #####
+# Run the whole workflow
 make all
 
+# Clean all of the workflow outputs
+make clean
+
+##### Run the workflow one at a time in order #####
 # Download the data and save to file
 make data/2012-18_playerBoxScore.csv
 
@@ -56,13 +59,11 @@ make results/modelling-gbm_importance.png results/modelling-residual_plot.png re
 
 # Generate the final report
 make report.pdf
-
-# Clean all the workflow outputs
-make clean
 ```
 
-__A Quick Note__: _To generate the final report requires various latex installs. In a future release we will wrap the depencies in a docker container which should alleviate the task of reproducing the results and running the scripts without errors. Stay tuned for future realeses planned in the coming weeks._
+You can rewiew the `Makefile` [here](https://github.com/UBC-MDS/DSCI_522_group408/blob/master/Makefile).
 
+If running locally, and not with Docker, make sure you have the required dependencies installed.
 
 ## Dependencies
 
@@ -89,11 +90,8 @@ __A Quick Note__: _To generate the final report requires various latex installs.
  - System requirement:
 	 - ChromeDriver==79.0.3945.36 # $ brew cask install chromedriver
 	 [click here for more information](https://altair-viz.github.io/user_guide/saving_charts.html)
-	 - plotly-orca # $ conda install -c plotly plotly-orca
-	 [click here for more information](https://github.com/plotly/orca)
-	 
-
-
+	 - Latex (TeX Live 2019)
+	 [click here for more information](https://nbconvert.readthedocs.io/en/latest/install.html#installing-tex)
 
 ## Licence
 
