@@ -9,6 +9,6 @@ scikit-learn==0.22.1
 matplotlib==3.1.2
 selenium==3.141.0
 termcolor==1.1.0
-jupyterlab==1.2.3
+jupyterlab==1.2.21
 xgboost==0.90
 lightgbm==2.3.1
